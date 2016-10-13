@@ -316,12 +316,3 @@ public class sudoku2 extends Application
 		stage.show();
 	}
 }
-
-
-/*
-game.reset.setOnAction(new EventHandler<ActionEvent>() {
-				@Override public void handle(ActionEvent e) {
-					game.resetButtons();
-				}
-		});
-*/
