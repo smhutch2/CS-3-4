@@ -6,15 +6,17 @@ public class prims{
 	public static void main(String args[]){
 		Graph graph = new Graph();
 		graph.createGraph("bingraph800-");
-		for(int i = 0; i < graph.vertices.size();i++) for(int j = 0; j < graph.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.vertices.get(i).index+"\tconnection: "+graph.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.vertices.get(i).connections.get(j).weight);
+		//for(int i = 0; i < graph.vertices.size();i++) for(int j = 0; j < graph.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.vertices.get(i).index+"\tconnection: "+graph.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.vertices.get(i).connections.get(j).weight);
 		//System.out.println(graph.checkUsed(new Vertex(4)));
+		graph.primSolve(0);
+		//for(int i = 0; i < graph.tree.vertices.size();i++) for(int j = 0; j < graph.tree.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.tree.vertices.get(i).index+"\tconnection: "+graph.tree.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.tree.vertices.get(i).connections.get(j).weight);		
 	}
 }
 
 class Graph{
 
 	ArrayList<Vertex> vertices = new ArrayList();
-	Graph tree = new Graph();
+	Graph tree;
 	
 	void createGraph(String filename){
 		int buff[] = new int[5500];
@@ -59,23 +61,28 @@ class Graph{
 	Vertex find(int index){
 		for(int i = 0; i < vertices.size(); i++){
 			Vertex temp = vertices.get(i);
-			if(index == temp.index) return temp; 
-		}		
+			if(index == temp.index) return temp;
+		}
+		return new Vertex(-1); 
 	}
 	
-	int primSolve(int startI){
+	void primSolve(int startI){
+		tree = new Graph();
 		int nextIndex = startI;
 		Vertex temp;
 		for(int i = 0; i < vertices.size(); i++){
-			
-			Vertex add = new Vertex; //the vertex added to the sub tree
 			temp = vertices.get(nextIndex); //the working vertex
 			tree.vertices.add(vertices.get(nextIndex)); //adds vertex to graph
 			Edge least = temp.connections.get(0); //the working edge of the vertex
-			
+			//System.out.println(nextIndex);
+			System.out.println(temp.connections.size());
 			for(int j = 0; j < temp.connections.size(); j++){
 				Edge eTemp = temp.connections.get(j); //the working edge
-				if(eTemp.weight < least.weight && tree.checkUsed(temp) == -1) least = eTemp; //the least edge
+				System.out.println(eTemp.connection+"\t"+least.connection);
+				if(eTemp.weight < least.weight && tree.checkUsed(temp) == -1){
+					least = eTemp; //the least weight edge
+					
+				} 
 			}
 			
 			nextIndex = least.connection;
