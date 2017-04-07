@@ -6,10 +6,30 @@ public class prims{
 	public static void main(String args[]){
 		Graph graph = new Graph();
 		graph.createGraph("bingraph800-");
+		
+		Graph test = new Graph();
+		test.addVertex(new Vertex(0), 3, 1);
+		test.addVertex(new Vertex(0), 2, 2);
+		test.addVertex(new Vertex(0), 4, 3);
+		test.addVertex(new Vertex(1), 5, 2);
+		test.addVertex(new Vertex(1), 3, 5);
+		test.addVertex(new Vertex(1), 2, 6);
+		test.addVertex(new Vertex(2), 4, 7);
+		test.addVertex(new Vertex(2), 5, 8);
+		
+		test.primSolve(0);
+		//Graph test1 = test.consolidate();
+		Graph test1 = test.tree;
+		for(int i = 0; i < test1.vertices.size();i++) for(int j = 0; j < test1.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+test1.vertices.get(i).index+"\tconnection: "+test1.vertices.get(i).connections.get(j).connection+"\t\tweight: "+test1.vertices.get(i).connections.get(j).weight);
 		//for(int i = 0; i < graph.vertices.size();i++) for(int j = 0; j < graph.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.vertices.get(i).index+"\tconnection: "+graph.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.vertices.get(i).connections.get(j).weight);
 		//System.out.println(graph.checkUsed(new Vertex(4)));
-		graph.primSolve(0);
-		//for(int i = 0; i < graph.tree.vertices.size();i++) for(int j = 0; j < graph.tree.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.tree.vertices.get(i).index+"\tconnection: "+graph.tree.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.tree.vertices.get(i).connections.get(j).weight);		
+		//graph.primSolve(0);
+		//for(int i = 0; i < graph.tree.vertices.size();i++) for(int j = 0; j < graph.tree.vertices.get(i).connections.size(); j++)	System.out.println("vertex: "+graph.tree.vertices.get(i).index+"\tconnection: "+graph.tree.vertices.get(i).connections.get(j).connection+"\t\tweight: "+graph.tree.vertices.get(i).connections.get(j).weight);
+		//int sum = 0;
+		//for(int i = 0; i <  graph.tree.vertices.size();i++) for(int j = 0; j < graph.tree.vertices.get(i).connections.size(); j++) sum += graph.tree.vertices.get(i).connections.get(j).weight;
+		//System.out.println("sum: "+sum);
+		//Vertex vert = new Vertex(5);
+		//System.out.println("checking: "+graph.tree.checkUsed(vert));
 	}
 }
 
@@ -68,27 +88,61 @@ class Graph{
 	
 	void primSolve(int startI){
 		tree = new Graph();
+		Graph tempGraph = new Graph();
 		int nextIndex = startI;
 		Vertex temp;
+		Vertex next;
+		int sum = 0;
 		for(int i = 0; i < vertices.size(); i++){
-			temp = vertices.get(nextIndex); //the working vertex
-			tree.vertices.add(vertices.get(nextIndex)); //adds vertex to graph
-			Edge least = temp.connections.get(0); //the working edge of the vertex
-			//System.out.println(nextIndex);
-			System.out.println(temp.connections.size());
-			for(int j = 0; j < temp.connections.size(); j++){
-				Edge eTemp = temp.connections.get(j); //the working edge
-				System.out.println(eTemp.connection+"\t"+least.connection);
-				if(eTemp.weight < least.weight && tree.checkUsed(temp) == -1){
-					least = eTemp; //the least weight edge
-					
-				} 
+			temp = find(nextIndex);
+			tempGraph.vertices.add(find(nextIndex));
+
+			for(int k = 0; k < tempGraph.vertices.size(); k++){
+				Vertex vTemp = tempGraph.vertices.get(k);
+				Edge last = new Edge(100,-1);
+				
+				for(int j = 0; j < vTemp.connections.size(); j++){
+					Edge eTemp = vTemp.connections.get(j); //the working edge
+
+					if(tempGraph.find(eTemp.connection).index == -1){ 
+						if(eTemp.weight <= last.weight){
+							nextIndex = eTemp.connection;
+							sum += eTemp.weight;
+						} 
+						last = eTemp;
+					}	
+				}
+				if(nextIndex == -1) System.out.println("failure");
 			}
-			
-			nextIndex = least.connection;
+			//System.out.println("next: "+nextIndex);
 		}
+		System.out.println("sum "+sum);
+		tree=tempGraph;
 	}
-/* 	
+	
+	Graph consolidate(){
+		Graph fnl = new Graph();
+		fnl.vertices.add(new Vertex(vertices.get(0).index));
+		
+		for(int i = 0; i < vertices.size()-1; i++){
+		
+			Vertex temp = vertices.get(i);
+			Vertex next = vertices.get(i+1);
+			System.out.println("here2");
+			
+			for(int j = 0; j < temp.connections.size(); j++){
+				
+				Edge eTemp = temp.connections.get(j);
+				if(eTemp.connection == next.index){
+					System.out.println("here1");
+					fnl.addVertex(new Vertex(temp.index), eTemp.weight, next.index);
+				} 
+
+			}
+		}
+		return fnl;
+	}
+	/* 
 	boolean checkCycle(Graph G, int Vertex){
 		if(int i = 0; i < vertices.size(); i++){
 			
