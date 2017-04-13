@@ -1,4 +1,4 @@
-//Runs breadth first search
+//Runs depth first search
 
 import Structure.*;
 import java.io.*;
@@ -6,7 +6,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Objects;
 
-public class bSearch{
+public class dSearch{
 	public static void main(String args[]){
 		Graph graph = new Graph(800);
 		graph.createGraph("bingraph800-");
@@ -24,7 +24,7 @@ public class bSearch{
 		graph.addVertex(7,1,12);*/
 		
 
-		Graph path = graph.breadthFirst(0,799);
+		Graph path = graph.depthFirst(0,799);
 		System.out.println("Path Weight: "+path.weight);
 	}
 }

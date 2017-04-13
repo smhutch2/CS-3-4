@@ -9,6 +9,7 @@ public class Graph{
 	public Vertex vertices[]; //vertices of graph
 	public Graph tree; //the minimally spanning tree, run primSolve to fill
 	public int size;
+	public int weight;
 	
 	//Constructor, only size is necessary
 	public Graph(int size){
@@ -82,7 +83,7 @@ public class Graph{
 	}
 
 	//does breadfirst search
-	public/* int[]*/ void breadthFirst(int start, int goal){
+	public Graph breadthFirst(int start, int goal){
 		ArrayList<Vertex> Current = new ArrayList();	//current working list
 		Current.add(vertices[start]);					//adds start vertex
 		ArrayList<Vertex> Next = new ArrayList();		//next working list
@@ -94,6 +95,7 @@ public class Graph{
 		int count = 0;									//records distance
 		boolean there = false;							//return true when it is there
 		
+		//performs search
 		while(!there){
 			count++;
 			
@@ -125,6 +127,77 @@ public class Graph{
 			Next = new ArrayList();						//resets next
 		}
 		
+		//constructs path, runs in reverse
+		Graph path = new Graph(size);					//path to be filled
+		there = false;									
+		int current = goal;								//the current vertex index
+		int next;										//the next vertex index
+		int sumweight = 0;
+
 		
+		while(!there){									//loops until it gets back to start
+			int least = size;//0xFFFFFFFF;							//used to find the least weight connection
+			Vertex temp = vertices[current];			//sets the working vertex
+			next = temp.connections.get(0).connection;
+			int indivWeight = 0;
+			//int least = distance[next];
+			
+			for(int i = 0; i < temp.connections.size(); i++){	//goes through temp connections to find least score
+				int conn = temp.connections.get(i).connection;
+				System.out.println("index:\t"+conn+"\tdistance:\t"+distance[conn]);
+				if(distance[conn] <= least && distance[conn] > 0){
+					next = conn;
+					least = distance[conn];
+					indivWeight = temp.connections.get(i).weight;
+					System.out.println("here1");
+				}
+				
+				if(conn == start){
+					System.out.println("here2");
+					next = conn;
+					indivWeight = temp.connections.get(i).weight;
+					there = true;
+					break;
+				}
+			}
+			System.out.println("adding path: "+current+"\t"+next+"\tweight\t"+indivWeight);
+			path.addVertex(current,1,next);
+			sumweight+= indivWeight;
+			current = next;
+		}
+		path.weight = sumweight;
+		return path;
+	}
+	
+	public Graph depthFirst(int start, int goal){
+		ArrayList<Integer> visited = new ArrayList();
+		Graph path = new Graph(size);
+		visited.add(start);
+		recurse(start, goal, visited, path);
+		return path;
+	}
+	
+	private boolean recurse(int current,int goal, ArrayList<Integer> visited, Graph path){
+		System.out.println("At beginning, current: "+current);
+		Vertex temp = vertices[current];	//working vertex
+		
+		if(current == goal){	//if its the goal bubbles back up
+			return true;
+		}
+		
+		for(int i = 0; i < temp.connections.size(); i++){	//goes through vertices, looks for unused connection
+			int conn = temp.connections.get(i).connection;
+			if(visited.indexOf(conn) == -1){	//goes to unused connections
+				visited.add(conn);	
+				
+				if(recurse(conn, goal, visited, path)){		//calls itself
+					System.out.println("goin up: "+conn+"\t"+current);
+					path.addVertex(conn, current, 1);
+					path.weight += temp.connections.get(i).weight;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
